@@ -64,7 +64,7 @@ Full step-by-step guide (local and VPS layouts, certificates, firewall): **[MCP 
 - Product: [SharpTrader AI Agents (MCP Server) module](https://bjftradinggroup.com/product/sharptrader-ai-agents-mcp/)
 - Guide: [AI agents can now trade in SharpTrader](https://bjftradinggroup.com/ai-agent-camouflage-orders-sharptrader/)
 - Claude assistant article: [Claude as an AI trading assistant](https://bjftradinggroup.com/claude-ai-trading-assistant/)
-- Support: Telegram [@HFTSoftware](https://t.me/HFTSoftware) · https://bjftradinggroup.com
+- Contact: Telegram [@borisfesenko](https://t.me/borisfesenko) · Channel [t.me/bjftradinggroup](https://t.me/bjftradinggroup) · https://bjftradinggroup.com
 
 ## Risk notice
 
