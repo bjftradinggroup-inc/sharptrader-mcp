@@ -1,0 +1,1013 @@
+{
+  "about": "SharpTrader's tools as its AI agents server lists them, shown by the bridge while SharpTrader cannot be reached. Generated from SharpTrader's tool definitions - do not edit by hand.",
+  "tools": [
+    {
+      "name": "get_overview",
+      "title": "Overview",
+      "description": "Program version, local time, which tool groups are allowed, and a short status of every session and strategy.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "Overview",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "list_sessions",
+      "title": "List sessions",
+      "description": "Every broker/exchange session as in the Sessions window: connection types and status of the quote and trading connection, ping, equity, balance, gain since the initial equity, open orders, average execution time and slippage.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "List sessions",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "list_strategies",
+      "title": "List strategies",
+      "description": "Every strategy as in the Strategies window: id, label, type, status (Running/Stopped), trading enabled, sessions, error counter, open orders, PnL and equity manager values.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "List strategies",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_strategy_settings",
+      "title": "Strategy settings",
+      "description": "The general settings of one strategy (its window's Settings tab), each with its type, current value, allowed values and whether it may change while the strategy runs; custom bot strategies also list the bot parameters. Instrument settings: get_strategy_instruments.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "annotations": {
+        "title": "Strategy settings",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_strategy_instruments",
+      "title": "Strategy instruments",
+      "description": "The instruments of one strategy, as its Instruments & Orders grid: every row (index, symbol) with its settings, the option groups inside it (e.g. trailing options, spread control) and its item lists (e.g. OC layers). Field types, allowed values and what may change while the strategy runs are listed once per list. Strategies with more than one list (e.g. trading intervals, filters) show them all unless collection is given.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "instrument": {
+            "type": "string",
+            "description": "Only this row: index, symbol (e.g. EURUSD) or label"
+          },
+          "collection": {
+            "type": "string",
+            "description": "Only this list, e.g. lstInstruments"
+          },
+          "live": {
+            "type": "boolean",
+            "description": "Also the current values the grid shows (diffs, spreads, prices); default false"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "annotations": {
+        "title": "Strategy instruments",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_performance",
+      "title": "Performance",
+      "description": "Trading statistics from the closed orders in the database, as in the Performance tab: trades, wins/losses (net of commission), net profit, profit factor, max drawdown, buy/sell split, execution time and slippage, and a per-symbol split. Filter by strategy and/or session; period or from/to selects the close time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "session": {
+            "type": "string",
+            "description": "Session id or name (list_sessions)"
+          },
+          "period": {
+            "type": "string",
+            "description": "Close time period (ignored when from is given)",
+            "enum": [
+              "all",
+              "today",
+              "last3days",
+              "week",
+              "month"
+            ]
+          },
+          "from": {
+            "type": "string",
+            "description": "Start time, e.g. 2026-11-05 or 2026-11-05T08:00:00 (local time unless an offset is given)"
+          },
+          "to": {
+            "type": "string",
+            "description": "End time (default: now)"
+          }
+        }
+      },
+      "annotations": {
+        "title": "Performance",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_orders",
+      "title": "Orders",
+      "description": "Orders held by the sessions now, as in the Orders tab: open positions/orders, closed in this run, rejected, or pending (sent, waiting for the broker). Newest first. Older closed orders: get_order_history.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "description": "Which orders",
+            "enum": [
+              "open",
+              "closed",
+              "rejected",
+              "pending"
+            ]
+          },
+          "session": {
+            "type": "string",
+            "description": "Session id or name (list_sessions)"
+          },
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Symbol filter (as the broker names it)"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of items (default 100)",
+            "minimum": 1,
+            "maximum": 1000
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "annotations": {
+        "title": "Orders",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_order_history",
+      "title": "Order history",
+      "description": "Closed orders of the strategies from the database, newest close first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "session": {
+            "type": "string",
+            "description": "Session id or name (list_sessions)"
+          },
+          "from": {
+            "type": "string",
+            "description": "Start time, e.g. 2026-11-05 or 2026-11-05T08:00:00 (local time unless an offset is given)"
+          },
+          "to": {
+            "type": "string",
+            "description": "End time (default: now)"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of items (default 200)",
+            "minimum": 1,
+            "maximum": 5000
+          }
+        }
+      },
+      "annotations": {
+        "title": "Order history",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "list_indicators",
+      "title": "Indicators",
+      "description": "The technical indicators get_indicator_values calculates - the ones SharpTrader's custom strategies use (Skender.Stock.Indicators) - with their parameters, defaults and choices. Without indicator: all of them in short; with indicator: that one in full.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "indicator": {
+            "type": "string",
+            "description": "One indicator, e.g. RSI or BollingerBands"
+          }
+        }
+      },
+      "annotations": {
+        "title": "Indicators",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_indicator_values",
+      "title": "Indicator values",
+      "description": "Values of a technical indicator on a session's candles, newest bar first, each with its bar's start time and close; the newest bar may still be forming. Calculated as custom strategies get them, from the candles SharpTrader collects for the symbol and timeframe. Warnings say when candle collection is off for that timeframe, when there are no or not enough candles, or when the quotes connection is down. Parameters by name as list_indicators shows them; the ones left out take their defaults.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": "string",
+            "description": "Session id or name (list_sessions)"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Symbol as the session names it"
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Candle timeframe",
+            "enum": [
+              "M1",
+              "M5",
+              "M15",
+              "M30",
+              "H1",
+              "H4",
+              "D1",
+              "W1",
+              "MN"
+            ]
+          },
+          "indicator": {
+            "type": "string",
+            "description": "Indicator name from list_indicators, e.g. SMA, RSI, MACD"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Indicator parameters by name, e.g. {\"price\": \"Close\", \"lookbackPeriods\": 14}"
+          },
+          "count": {
+            "type": "integer",
+            "description": "How many of the newest values (default 10)",
+            "minimum": 1,
+            "maximum": 500
+          }
+        },
+        "required": [
+          "session",
+          "symbol",
+          "timeframe",
+          "indicator"
+        ]
+      },
+      "annotations": {
+        "title": "Indicator values",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_strategy_log",
+      "title": "Strategy log",
+      "description": "Log lines of a strategy, newest first. Recent lines come from memory; give from/to to include lines archived in the database.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "contains": {
+            "type": "string",
+            "description": "Return only lines containing this text (case-insensitive)"
+          },
+          "from": {
+            "type": "string",
+            "description": "Start time, e.g. 2026-11-05 or 2026-11-05T08:00:00 (local time unless an offset is given)"
+          },
+          "to": {
+            "type": "string",
+            "description": "End time (default: now)"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of items (default 200)",
+            "minimum": 1,
+            "maximum": 5000
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "annotations": {
+        "title": "Strategy log",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_session_log",
+      "title": "Session log",
+      "description": "Connection log of a session (quotes or trading connection), newest first. Give from/to to include lines archived in the database.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": "string",
+            "description": "Session id or name (list_sessions)"
+          },
+          "connection": {
+            "type": "string",
+            "description": "Which connection (default quotes)",
+            "enum": [
+              "quotes",
+              "trading"
+            ]
+          },
+          "contains": {
+            "type": "string",
+            "description": "Return only lines containing this text (case-insensitive)"
+          },
+          "from": {
+            "type": "string",
+            "description": "Start time, e.g. 2026-11-05 or 2026-11-05T08:00:00 (local time unless an offset is given)"
+          },
+          "to": {
+            "type": "string",
+            "description": "End time (default: now)"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of items (default 200)",
+            "minimum": 1,
+            "maximum": 5000
+          }
+        },
+        "required": [
+          "session"
+        ]
+      },
+      "annotations": {
+        "title": "Session log",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_journal",
+      "title": "Journal",
+      "description": "SharpTrader's journal (program events, errors, MCP calls), newest first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "contains": {
+            "type": "string",
+            "description": "Return only lines containing this text (case-insensitive)"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of items (default 100)",
+            "minimum": 1,
+            "maximum": 2000
+          }
+        }
+      },
+      "annotations": {
+        "title": "Journal",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_news",
+      "title": "News filter",
+      "description": "The News tab: this week's economic calendar events (Forex Factory) and the tab's options. An enabled event is in its window from 'before' ahead of its time until 'after' past it, for the symbols whose name contains its currency (ALL: every symbol). Strategies with the news filter on (setting UseNewsFilter, 'Check news filter') and NewsAction 1 ('don't trade on news') open no trades in that window; NewsAction 0 ('trade on news') trades only in it - change both with update_strategy_settings. Also lists the strategies that use the filter and the events in their window now. index is the event's number for update_news_events.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "upcoming_only": {
+            "type": "boolean",
+            "description": "Only events that are not over yet (default false)"
+          }
+        }
+      },
+      "annotations": {
+        "title": "News filter",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "start_strategy",
+      "title": "Start strategy",
+      "description": "Starts a stopped strategy (the Start button). It trades only while 'trading enabled' is on and its sessions are connected.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "annotations": {
+        "title": "Start strategy",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "stop_strategy",
+      "title": "Stop strategy",
+      "description": "Stops a running strategy (the Stop button). Open positions stay open but are no longer managed by the strategy until it starts again.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "annotations": {
+        "title": "Stop strategy",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "start_all_strategies",
+      "title": "Start all strategies",
+      "description": "Starts every stopped strategy.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "Start all strategies",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "stop_all_strategies",
+      "title": "Stop all strategies",
+      "description": "Stops every running strategy. Open positions stay open but unmanaged.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "Stop all strategies",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "set_strategy_trading",
+      "title": "Enable/disable trading",
+      "description": "Turns the strategy's 'Trading' switch (Strategies window) on or off. Off: the strategy keeps running but opens no new trades.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "true = trading on"
+          }
+        },
+        "required": [
+          "strategy",
+          "enabled"
+        ]
+      },
+      "annotations": {
+        "title": "Enable/disable trading",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "connect_session",
+      "title": "Connect session",
+      "description": "Connects a session's quote and trading connections (the Connect button). Connecting continues in the background; wait_seconds waits for the result.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": "string",
+            "description": "Session id or name (list_sessions)"
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "description": "Wait up to this many seconds for CONNECTED (default 0)",
+            "minimum": 0,
+            "maximum": 60
+          }
+        },
+        "required": [
+          "session"
+        ]
+      },
+      "annotations": {
+        "title": "Connect session",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "disconnect_session",
+      "title": "Disconnect session",
+      "description": "Disconnects a session (the Disconnect button). Running strategies on it stop trading on it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": "string",
+            "description": "Session id or name (list_sessions)"
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "description": "Wait up to this many seconds for DISCONNECTED (default 0)",
+            "minimum": 0,
+            "maximum": 60
+          }
+        },
+        "required": [
+          "session"
+        ]
+      },
+      "annotations": {
+        "title": "Disconnect session",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "connect_all_sessions",
+      "title": "Connect all sessions",
+      "description": "Connects every session that is not connected (Ctrl+Connect).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "Connect all sessions",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "disconnect_all_sessions",
+      "title": "Disconnect all sessions",
+      "description": "Disconnects every session (Ctrl+Disconnect).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "Disconnect all sessions",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "update_strategy_settings",
+      "title": "Change strategy settings",
+      "description": "Changes general strategy settings and saves the strategy. general = {settingName: value}; botParameters = {name: value} for custom bot strategies. Names and what may change while running come from get_strategy_settings; instrument settings are changed with update_strategy_instruments. All changes are checked first: if one is wrong nothing changes. Refused while the strategy's window is open in SharpTrader.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "general": {
+            "type": "object",
+            "description": "General settings to change, e.g. {\"MaxOrdersTotal\": 5}"
+          },
+          "botParameters": {
+            "type": "object",
+            "description": "Custom bot strategies only: bot parameters to change (strategy stopped)"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "annotations": {
+        "title": "Change strategy settings",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "update_strategy_instruments",
+      "title": "Change instrument settings",
+      "description": "Changes instrument settings (the Instruments & Orders grid and its option dialogs) and saves the strategy. changes = [{instrument, values, collection?}]: instrument = row index, symbol, label or \"*\" for every row; values = {field: value}, option groups as {\"trailingOptions1\": {\"StopLoss\": 50}} or \"trailingOptions1.StopLoss\", list items as \"lstOCLayers[0].OpenDiff\". collection is needed only when the strategy has several instrument lists. Numbers, check boxes and choices may change while the strategy runs; texts need it stopped; symbol names need it stopped with no open orders (when changing a symbol, also set its Digits/lot fields). Instruments cannot be added or removed. All changes are checked first: if one is wrong nothing changes. Refused while the strategy's window is open in SharpTrader.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "changes": {
+            "type": "array",
+            "description": "Instrument changes",
+            "items": {
+              "type": "object",
+              "properties": {
+                "instrument": {
+                  "type": "string",
+                  "description": "Row index, symbol (e.g. EURUSD), label, or * for every row"
+                },
+                "values": {
+                  "type": "object",
+                  "description": "Fields to change, e.g. {\"Lots\": 0.1, \"trailingOptions1\": {\"Enabled\": true}}"
+                },
+                "collection": {
+                  "type": "string",
+                  "description": "List name, e.g. lstInstruments (only when there are several)"
+                }
+              },
+              "required": [
+                "instrument",
+                "values"
+              ]
+            }
+          }
+        },
+        "required": [
+          "strategy",
+          "changes"
+        ]
+      },
+      "annotations": {
+        "title": "Change instrument settings",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "create_strategy",
+      "title": "Create strategy",
+      "description": "Adds a new strategy of the given type, as the Strategies window's Add strategy button, but applies no symbol template and opens no window. It is saved and stopped. It has no sessions and usually no instruments: the user sets them in its window in SharpTrader (these tools cannot add sessions or instruments) - to get a ready strategy, clone a configured one instead. Only the types in the licence are allowed (get_overview: creatableStrategyTypes).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Strategy type",
+            "enum": [
+              "OneLeg",
+              "OneLegVirtual",
+              "OneLegCross",
+              "Lock",
+              "LockCL",
+              "LockCL2",
+              "LockCL3",
+              "Hedge",
+              "HedgeMM",
+              "HedgeETF",
+              "HedgePost",
+              "HedgeMartingale",
+              "Statistical",
+              "Triangular",
+              "LPooling",
+              "BrightTrio",
+              "BrightTrioPlus",
+              "BrightDuo",
+              "TrendPulse",
+              "PairTrading",
+              "PairTradingPost",
+              "CryptoLock",
+              "PhantomDrift",
+              "HybridMasking",
+              "DominionForce",
+              "UmbraLock",
+              "CustomBot"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "description": "Label of the new strategy: unique, up to 64 letters, digits, spaces and _ - . ( ) # (default: the type and a unique number)"
+          },
+          "single_session": {
+            "type": "boolean",
+            "description": "Both legs on one session (the dialog's Single session box): only Lock, LockCL, LockCL2, LockCL3, Statistical, Triangular; default false"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "annotations": {
+        "title": "Create strategy",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "clone_strategy",
+      "title": "Clone strategy",
+      "description": "Copies a strategy with its settings, instruments and sessions, as the clone button in the Strategies window, and saves the copy. The copy is stopped, has no orders and keeps the original's trading enabled and autorun values. Change it with update_strategy_settings / update_strategy_instruments.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          },
+          "label": {
+            "type": "string",
+            "description": "Label of the new strategy: unique, up to 64 letters, digits, spaces and _ - . ( ) # (default: the original's label + _cloned)"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "annotations": {
+        "title": "Clone strategy",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "refresh_news",
+      "title": "Refresh news calendar",
+      "description": "Downloads this week's calendar from Forex Factory (the News tab's Refresh button) and keeps the events that pass the tab's filters (update_news_settings), all enabled and for ALL symbols. apply (default true) then presses Apply changes: the new list replaces the one strategies use and is saved, so earlier changes to events are lost. apply=false leaves the new list in the tab for the user to check; the old list stays in effect until Apply changes. After this call each event's own currency is known (update_news_events currency \"own\").",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "apply": {
+            "type": "boolean",
+            "description": "Put the new list in effect (Apply changes); default true"
+          }
+        }
+      },
+      "annotations": {
+        "title": "Refresh news calendar",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "update_news_settings",
+      "title": "Change news options",
+      "description": "Changes the News tab's options and presses Apply changes (saved). before/after and their units set the window around each event and take effect at once. The filters (symbols, ignore words, impacts, current day only) decide which events refresh_news keeps; the current list is not filtered again. Give only what changes. Apply changes also applies what the user changed in the tab and did not apply yet.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "symbols_filter_enabled": {
+            "type": "boolean",
+            "description": "Symbols filter: keep only the events of these currencies"
+          },
+          "symbols_filter": {
+            "type": "string",
+            "description": "Currencies, comma-separated, e.g. EUR,USD,JPY"
+          },
+          "ignore_filter_enabled": {
+            "type": "boolean",
+            "description": "Ignore filter: drop the events whose title or impact contains one of these words"
+          },
+          "ignore_filter": {
+            "type": "string",
+            "description": "Words, comma-separated, e.g. holiday,speaks,tentative"
+          },
+          "show_only_current_day": {
+            "type": "boolean",
+            "description": "Keep only the events of the day of the refresh"
+          },
+          "include_high": {
+            "type": "boolean",
+            "description": "Keep high impact events"
+          },
+          "include_medium": {
+            "type": "boolean",
+            "description": "Keep medium impact events"
+          },
+          "include_low": {
+            "type": "boolean",
+            "description": "Keep low impact events"
+          },
+          "before": {
+            "type": "integer",
+            "description": "Window before an event's time, in before_unit",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "before_unit": {
+            "type": "string",
+            "description": "Unit of before",
+            "enum": [
+              "seconds",
+              "milliseconds"
+            ]
+          },
+          "after": {
+            "type": "integer",
+            "description": "Window after an event's time, in after_unit",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "after_unit": {
+            "type": "string",
+            "description": "Unit of after",
+            "enum": [
+              "seconds",
+              "milliseconds"
+            ]
+          }
+        }
+      },
+      "annotations": {
+        "title": "Change news options",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "update_news_events",
+      "title": "Change news events",
+      "description": "Turns events on or off and sets which symbols they affect (the News tab's Enabled and Currency columns), then presses Apply changes (saved). changes = [{event, impact?, enabled?, currency?}]: event = index (get_news), \"*\" for every event, or a text the title contains (every match, case-insensitive); impact narrows it to High, Medium, Low or Holiday events. currency = ALL (every symbol), a code the symbol names contain (USD affects EURUSD and USDJPY), or \"own\" for the event's own currency (known after refresh_news). Changes apply in order; all are checked first and if one is wrong nothing changes. Apply changes also puts a refreshed list that was not applied yet in effect. SharpTrader sets every event's currency back to ALL when it starts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "array",
+            "description": "Event changes",
+            "items": {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "string",
+                  "description": "Index (get_news), * for every event, or a text the title contains"
+                },
+                "impact": {
+                  "type": "string",
+                  "description": "Only events of this impact",
+                  "enum": [
+                    "High",
+                    "Medium",
+                    "Low",
+                    "Holiday"
+                  ]
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "true = the event is checked by the news filter"
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "ALL, a currency code such as USD, or own"
+                }
+              },
+              "required": [
+                "event"
+              ]
+            }
+          }
+        },
+        "required": [
+          "changes"
+        ]
+      },
+      "annotations": {
+        "title": "Change news events",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "close_strategy_positions",
+      "title": "Close strategy positions",
+      "description": "Closes all positions of a running strategy at market (its Close All button). The orders are sent at once and close in the background; get_orders state=open shows what is left.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "Strategy id or label (list_strategies)"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "annotations": {
+        "title": "Close strategy positions",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    }
+  ]
+}
