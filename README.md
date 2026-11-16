@@ -32,7 +32,7 @@ The MCP server is built into SharpTrader (Windows, .NET). An AI agent can read y
 | Authentication | 32-byte access token on every request, HTTPS required off the local computer, IP allow-list, brute-force blocking, no browser-origin requests. |
 | Audit trail | Daily call log and journal entries for every action and failure. |
 
-![Life of a scheduled order](https://bjftradinggroup.com/wp-content/uploads/2026/11/ai-agent-camouflage-order-lifecycle-1760x800-1.webp)
+![Life of a scheduled order](https://bjftradinggroup.com/wp-content/uploads/2026/11/ai-agent-non-toxic-order-lifecycle-1760x800-1.webp)
 
 ## Quick start
 
@@ -89,6 +89,7 @@ The MIT [license](LICENSE) covers the files in this repository. SharpTrader itse
 
 - Product: [SharpTrader AI Agents (MCP Server) module](https://bjftradinggroup.com/product/sharptrader-ai-agents-mcp/)
 - Guide: [AI agents can now trade in SharpTrader](https://bjftradinggroup.com/ai-agent-camouflage-orders-sharptrader/)
+- Agent skills: [sharptrader-non-toxic-skills](https://github.com/bjftradinggroup-inc/sharptrader-non-toxic-skills), nine free skills that teach your agent to plan non-toxic orders within your limits ([overview](https://bjftradinggroup.com/mcp-for-trading/non-toxic-skills/))
 - Claude assistant article: [Claude as an AI trading assistant](https://bjftradinggroup.com/claude-ai-trading-assistant/)
 - Contact: Telegram [@borisfesenko](https://t.me/borisfesenko) · Channel [t.me/bjftradinggroup](https://t.me/bjftradinggroup) · https://bjftradinggroup.com
 
