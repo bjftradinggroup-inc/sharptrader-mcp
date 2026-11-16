@@ -1,0 +1,34 @@
+{
+  "name": "sharptrader-mcp",
+  "version": "1.1.0",
+  "description": "Stdio bridge from MCP clients (Claude Desktop and others) to the MCP server built into SharpTrader, the forex and crypto trading platform.",
+  "license": "MIT",
+  "author": "BJF Trading Group Inc.",
+  "homepage": "https://bjftradinggroup.com/mcp-for-trading/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bjftradinggroup-inc/sharptrader-mcp.git"
+  },
+  "main": "server/index.js",
+  "bin": {
+    "sharptrader-mcp": "server/index.js"
+  },
+  "files": [
+    "server/"
+  ],
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "trading",
+    "forex",
+    "crypto",
+    "sharptrader"
+  ],
+  "private": true
+}
